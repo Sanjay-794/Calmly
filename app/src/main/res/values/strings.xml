@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Calmly</string>
+    <string name="notification_channel_name">Calmly Playback</string>
+    <string name="notification_channel_description">Music playback controls</string>
 </resources>

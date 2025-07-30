@@ -2,59 +2,57 @@ package com.example.calmly.media
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
+import com.example.calmly.model.SoundItem
 
-class MediaPlayerManager(private val context: Context)
-{
+
+
+class MediaPlayerManager(private val context: Context) {
     private var exoPlayer: ExoPlayer? = null
+    private var currentSound: SoundItem? = null
 
-    fun initializePlayer() {
+    fun getOrCreatePlayer(): ExoPlayer {
         if (exoPlayer == null) {
             exoPlayer = ExoPlayer.Builder(context).build()
         }
+        return exoPlayer!!
     }
 
-    fun playSoundFromRaw(rawResId: Int) {
-        // Stop and clear previous playback before starting new one
-        if (exoPlayer?.isPlaying == true) {
-            exoPlayer?.stop()
-
-            exoPlayer?.clearMediaItems()
+    fun playSound(sound: SoundItem) {
+        val player = getOrCreatePlayer()
+        if (player.isPlaying) {
+            player.stop()
+            player.clearMediaItems()
         }
 
-        initializePlayer()
-
-        val uri = Uri.parse("android.resource://${context.packageName}/$rawResId")
+        val uri = Uri.parse("android.resource://${context.packageName}/${sound.soundResId}")
         val mediaItem = MediaItem.fromUri(uri)
-        Log.d("MediaPlayerManager", "Playing sound from raw: $rawResId")
 
-        exoPlayer?.setMediaItem(mediaItem)
-        exoPlayer?.prepare()
-        exoPlayer?.playWhenReady = true
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.playWhenReady = true
+        player.repeatMode = ExoPlayer.REPEAT_MODE_ONE
+
+        currentSound = sound
     }
 
-    fun pause() {
-        exoPlayer?.pause()
-    }
+    fun pause() = exoPlayer?.pause()
 
-    fun resume() {
-        exoPlayer?.play()
-    }
+    fun resume() = exoPlayer?.play()
 
     fun stop() {
         exoPlayer?.stop()
+        currentSound = null
     }
 
-    fun isPlaying(): Boolean {
-        return exoPlayer?.isPlaying == true
-    }
+    fun isPlaying(): Boolean = exoPlayer?.isPlaying == true
+
+    fun getCurrentSound(): SoundItem? = currentSound
 
     fun release() {
         exoPlayer?.release()
         exoPlayer = null
+        currentSound = null
     }
-
-    fun getPlayer(): ExoPlayer? = exoPlayer
 }

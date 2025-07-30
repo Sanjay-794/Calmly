@@ -34,14 +34,14 @@ import com.example.calmly.viewmodel.PlaybackState
 import com.example.calmly.model.SoundItem
 
 @Composable
-fun SoundCard(item: SoundItem,
-              viewModel: MediaViewModel
-)
-{
-
-    val context= LocalContext.current
+fun SoundCard(
+    item: SoundItem,
+    viewModel: MediaViewModel
+) {
+    val context = LocalContext.current
     val playbackUiState by viewModel.playbackUiState.collectAsState()
-    val isThisCardActive = playbackUiState.currentPlayingResId == item.soundResId
+
+    val isThisCardActive = playbackUiState.currentPlaying?.soundResId == item.soundResId
     val playbackState = playbackUiState.state
 
     Box(
@@ -51,7 +51,7 @@ fun SoundCard(item: SoundItem,
             .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
             .clickable {
-                viewModel.onSoundCardClicked(context, item.soundResId)
+                viewModel.onSoundCardClicked(context, item)
             }
     ) {
         Image(
@@ -63,9 +63,9 @@ fun SoundCard(item: SoundItem,
                 .fillMaxHeight()
         )
 
-        // Top-right timestamp
+        // Top-left duration label
         Text(
-            text = item.duration+"min",
+            text = "${item.duration} min",
             color = Color.White,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
@@ -76,6 +76,7 @@ fun SoundCard(item: SoundItem,
                 .padding(horizontal = 5.dp, vertical = 2.dp)
         )
 
+        // Bottom overlay with title
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -92,7 +93,7 @@ fun SoundCard(item: SoundItem,
             )
         }
 
-        // Apply grey overlay when this card is active
+        // Grey overlay & icon when active
         if (isThisCardActive && playbackState != PlaybackState.STOPPED) {
             Box(
                 modifier = Modifier
@@ -100,7 +101,6 @@ fun SoundCard(item: SoundItem,
                     .background(Color.Black.copy(alpha = 0.4f))
             )
 
-            // Show play/pause icon in center
             val icon = when (playbackState) {
                 PlaybackState.PLAYING -> R.drawable.baseline_pause_24
                 PlaybackState.PAUSED -> R.drawable.baseline_play_arrow_24
@@ -119,5 +119,4 @@ fun SoundCard(item: SoundItem,
             }
         }
     }
-
 }

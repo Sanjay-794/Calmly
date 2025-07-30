@@ -61,10 +61,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Core Media3 Player
-    implementation("androidx.media3:media3-exoplayer:1.7.1")
+    implementation("androidx.media3:media3-exoplayer:1.8.0")
 
     // For notifications (MediaSession + MediaStyle notifications)
-    implementation("androidx.media3:media3-session:1.7.1")
+    implementation("androidx.media3:media3-session:1.8.0")
 
     // Optional: For UI controls, use only if needed
     implementation("androidx.media3:media3-ui:1.3.1")

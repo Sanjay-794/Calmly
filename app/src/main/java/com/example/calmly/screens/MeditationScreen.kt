@@ -19,28 +19,19 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.calmly.viewmodel.MediaViewModel
 import com.example.calmly.R
+import com.example.calmly.SoundData
 import com.example.calmly.components.SoundCard
 import com.example.calmly.model.SoundItem
 
 @Composable
 fun MeditationScreen() {
-
-    val context=LocalContext.current
-    val items = listOf(
-        SoundItem("finding myself", getRawAudioDurationInMinutes(context,R.raw.finding_myself).toString(), R.drawable.med1, R.raw.finding_myself),
-        SoundItem("harp relax", getRawAudioDurationInMinutes(context,R.raw.harp_relax).toString(), R.drawable.med2, R.raw.harp_relax),
-        SoundItem("nature meditation", getRawAudioDurationInMinutes(context,R.raw.nature_meditation).toString(), R.drawable.med3, R.raw.nature_meditation),
-        SoundItem("relax beat", getRawAudioDurationInMinutes(context,R.raw.relax_beat).toString(), R.drawable.med4, R.raw.relax_beat),
-        SoundItem("serene view", getRawAudioDurationInMinutes(context,R.raw.serene_view).toString(), R.drawable.med5, R.raw.serene_view),
-        SoundItem("spirit in woods", getRawAudioDurationInMinutes(context,R.raw.spirit_in_woods).toString(), R.drawable.med6, R.raw.spirit_in_woods)
-    )
-
+    val context = LocalContext.current
     val mediaViewModel: MediaViewModel = hiltViewModel()
 
+    val items=SoundData.getMeditationSounds(context)
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -54,7 +45,7 @@ fun MeditationScreen() {
             }
         }
     }
-    }
+}
 //}
 
 fun getRawAudioDurationInMinutes(context: Context, rawResId: Int): Double {
