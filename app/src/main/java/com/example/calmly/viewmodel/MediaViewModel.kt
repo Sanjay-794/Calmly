@@ -6,34 +6,47 @@ import androidx.annotation.OptIn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.util.UnstableApi
-import com.example.calmly.SoundData
-import com.example.calmly.service.MediaPlaybackService
+import com.example.calmly.SongRepository
+//import com.example.calmly.SoundData
+//import com.example.calmly.service.MediaPlaybackService
 import com.example.calmly.media.MediaPlayerManager
 import com.example.calmly.model.SoundItem
+import com.example.calmly.service.MediaPlaybackService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MediaViewModel@Inject constructor(private val mediaPlayerManager: MediaPlayerManager) : ViewModel()
+class MediaViewModel@Inject constructor(private val mediaPlayerManager: MediaPlayerManager,
+    private val repository: SongRepository) : ViewModel()
 {
+
     private val _playbackUiState = MutableStateFlow(PlaybackUiState())
     val playbackUiState = _playbackUiState.asStateFlow()
+
+    val songs: StateFlow<List<SoundItem>> = repository.songsFlow
+
+    init {
+        repository.fetchSongs()
+    }
 
     @OptIn(UnstableApi::class)
     fun onSoundCardClicked(context: Context, sound: SoundItem) {
         val currentState = _playbackUiState.value
 
         when {
-            currentState.currentPlaying?.soundResId != sound.soundResId -> {
+            currentState.currentPlaying?.url != sound.url -> {
                 val intent = Intent(context, MediaPlaybackService::class.java).apply {
-                    action = MediaPlaybackService.ACTION_PLAY_RESOURCE
-                    putExtra(MediaPlaybackService.EXTRA_RES_ID, sound.soundResId)
+                    action = MediaPlaybackService.ACTION_PLAY
+                    putExtra(MediaPlaybackService.EXTRA_SOUND_TITLE, sound.title)
+                    putExtra(MediaPlaybackService.EXTRA_SOUND_URL, sound.url)
+                    putExtra(MediaPlaybackService.EXTRA_SOUND_IMAGE, sound.image)
                 }
                 context.startForegroundService(intent)
 
@@ -41,20 +54,16 @@ class MediaViewModel@Inject constructor(private val mediaPlayerManager: MediaPla
             }
 
             currentState.state == PlaybackState.PLAYING -> {
-                val intent = Intent(context, MediaPlaybackService::class.java).apply {
+                context.startService(Intent(context, MediaPlaybackService::class.java).apply {
                     action = MediaPlaybackService.ACTION_PAUSE
-                }
-                context.startService(intent)
-
+                })
                 _playbackUiState.update { it.copy(state = PlaybackState.PAUSED) }
             }
 
             currentState.state == PlaybackState.PAUSED -> {
-                val intent = Intent(context, MediaPlaybackService::class.java).apply {
+                context.startService(Intent(context, MediaPlaybackService::class.java).apply {
                     action = MediaPlaybackService.ACTION_STOP
-                }
-                context.startService(intent)
-
+                })
                 _playbackUiState.value = PlaybackUiState(null, PlaybackState.STOPPED)
             }
         }

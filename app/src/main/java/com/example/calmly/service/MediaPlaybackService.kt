@@ -5,26 +5,28 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
+import android.transition.Transition
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import androidx.media3.ui.PlayerNotificationManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
 import com.example.calmly.MainActivity
 import com.example.calmly.NotificationChannels
 import com.example.calmly.R
-import com.example.calmly.SoundData
+//import com.example.calmly.SoundData
 import com.example.calmly.media.MediaPlayerManager
-
+import com.example.calmly.model.SoundItem
 
 
 @UnstableApi
 class MediaPlaybackService : MediaSessionService() {
 
     private lateinit var mediaSession: MediaSession
-//    private lateinit var compatSession: MediaSessionCompat
-//private lateinit var compatSession: MediaSessionCompat
     private lateinit var mediaPlayerManager: MediaPlayerManager
     private lateinit var player: ExoPlayer
     private var playerNotificationManager: PlayerNotificationManager? = null
@@ -38,18 +40,10 @@ class MediaPlaybackService : MediaSessionService() {
             .setId("CalmlySession")
             .build()
 
-//        compatSession = MediaSessionCompat(this, "CalmlyCompatSession")
-
         setupNotification()
     }
 
     private fun setupNotification() {
-//        compatSession = MediaSessionCompat(this, "CalmlyCompatSession")
-
-//        val compatToken = mediaSession.token
-//        val platformToken = compatToken as android.media.session.MediaSession.Token
-
-//        val platformToken = compatSession.sessionToken.token as? android.media.session.MediaSession.Token
         playerNotificationManager = PlayerNotificationManager.Builder(
             this,
             NOTIFICATION_ID,
@@ -72,14 +66,25 @@ class MediaPlaybackService : MediaSessionService() {
 
                 override fun getCurrentContentText(player: Player): CharSequence? = null
 
-                override fun getCurrentLargeIcon(
-                    player: Player,
-                    callback: PlayerNotificationManager.BitmapCallback
-                ): Bitmap? {
-                    return mediaPlayerManager.getCurrentSound()?.imageRes?.let {
-                        BitmapFactory.decodeResource(resources, it)
-                    }
-                }
+override fun getCurrentLargeIcon(
+    player: Player,
+    callback: PlayerNotificationManager.BitmapCallback
+): Bitmap? {
+    val imageUrl = mediaPlayerManager.getCurrentSound()?.image ?: return null
+
+    Glide.with(this@MediaPlaybackService)
+        .asBitmap()
+        .load(imageUrl)
+        .into(object : CustomTarget<Bitmap>() {
+            override fun onResourceReady(resource: Bitmap, transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?) {
+                callback.onBitmap(resource)
+            }
+
+            override fun onLoadCleared(placeholder: Drawable?) {}
+        })
+
+    return null
+}
             })
             .setSmallIconResourceId(R.drawable.app_logo)
             .setNotificationListener(object : PlayerNotificationManager.NotificationListener {
@@ -116,17 +121,16 @@ class MediaPlaybackService : MediaSessionService() {
 
     @SuppressLint("MissingSuperCall")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val action = intent?.action
+        when (intent?.action) {
+            ACTION_PLAY -> {
+                val title = intent.getStringExtra(EXTRA_SOUND_TITLE) ?: return START_NOT_STICKY
+                val url = intent.getStringExtra(EXTRA_SOUND_URL) ?: return START_NOT_STICKY
+                val image = intent.getStringExtra(EXTRA_SOUND_IMAGE) ?: ""
 
-        when (action) {
-            ACTION_PLAY_RESOURCE -> {
-                val resId = intent.getIntExtra(EXTRA_RES_ID, -1)
-                SoundData.getSoundByResId(this, resId)?.let {
-                    mediaPlayerManager.playSound(it)
-                }
+                val sound = SoundItem(title = title, url = url, image = image)
+                mediaPlayerManager.playSound(sound)
             }
 
-            ACTION_PLAY -> mediaPlayerManager.resume()
             ACTION_PAUSE -> mediaPlayerManager.pause()
             ACTION_STOP -> {
                 mediaPlayerManager.stop()
@@ -158,5 +162,8 @@ class MediaPlaybackService : MediaSessionService() {
         const val ACTION_STOP = "com.example.calmly.ACTION_STOP"
         const val ACTION_PLAY_RESOURCE = "com.example.calmly.ACTION_PLAY_RESOURCE"
         const val EXTRA_RES_ID = "res_id"
+        const val EXTRA_SOUND_TITLE = "extra_sound_title"
+        const val EXTRA_SOUND_URL = "extra_sound_url"
+        const val EXTRA_SOUND_IMAGE = "extra_sound_image"
     }
 }

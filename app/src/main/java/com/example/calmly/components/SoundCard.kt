@@ -1,6 +1,5 @@
 package com.example.calmly.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,9 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,17 +18,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.calmly.R
+import com.example.calmly.model.SoundItem
 import com.example.calmly.viewmodel.MediaViewModel
 import com.example.calmly.viewmodel.PlaybackState
-import com.example.calmly.model.SoundItem
 
+
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SoundCard(
     item: SoundItem,
@@ -41,7 +41,7 @@ fun SoundCard(
     val context = LocalContext.current
     val playbackUiState by viewModel.playbackUiState.collectAsState()
 
-    val isThisCardActive = playbackUiState.currentPlaying?.soundResId == item.soundResId
+    val isThisCardActive = playbackUiState.currentPlaying?.url == item.url
     val playbackState = playbackUiState.state
 
     Box(
@@ -54,27 +54,11 @@ fun SoundCard(
                 viewModel.onSoundCardClicked(context, item)
             }
     ) {
-        Image(
-            painter = painterResource(id = item.imageRes),
-            contentDescription = item.title,
-            contentScale = ContentScale.FillBounds,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        )
 
-        // Top-left duration label
-        Text(
-            text = "${item.duration} min",
-            color = Color.White,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(6.dp)
-                .background(Color.Black.copy(alpha = 0.5f), shape = RoundedCornerShape(12.dp))
-                .padding(horizontal = 5.dp, vertical = 2.dp)
-        )
+        GlideImage(model = item.image,
+            contentDescription = "image of song",
+            contentScale = Crop,
+            modifier = Modifier.fillMaxHeight().fillMaxWidth())
 
         // Bottom overlay with title
         Box(
@@ -93,7 +77,7 @@ fun SoundCard(
             )
         }
 
-        // Grey overlay & icon when active
+//         Grey overlay & icon when active
         if (isThisCardActive && playbackState != PlaybackState.STOPPED) {
             Box(
                 modifier = Modifier
@@ -107,9 +91,9 @@ fun SoundCard(
                 else -> null
             }
 
-            icon?.let {
+            if (icon != null) {
                 Icon(
-                    painter = painterResource(it),
+                    painter = painterResource(icon),
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier
@@ -118,5 +102,4 @@ fun SoundCard(
                 )
             }
         }
-    }
-}
+    }}

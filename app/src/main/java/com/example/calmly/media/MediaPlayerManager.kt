@@ -19,6 +19,8 @@ class MediaPlayerManager(private val context: Context) {
         return exoPlayer!!
     }
 
+
+
     fun playSound(sound: SoundItem) {
         val player = getOrCreatePlayer()
         if (player.isPlaying) {
@@ -26,9 +28,7 @@ class MediaPlayerManager(private val context: Context) {
             player.clearMediaItems()
         }
 
-        val uri = Uri.parse("android.resource://${context.packageName}/${sound.soundResId}")
-        val mediaItem = MediaItem.fromUri(uri)
-
+        val mediaItem = MediaItem.fromUri(sound.url)
         player.setMediaItem(mediaItem)
         player.prepare()
         player.playWhenReady = true

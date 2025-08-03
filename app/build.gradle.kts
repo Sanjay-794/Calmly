@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -37,6 +38,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+//    kotlin {
+//        jvmToolchain(11)
+//    }
     buildFeatures {
         compose = true
     }
@@ -52,6 +56,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -85,5 +91,15 @@ dependencies {
     implementation ("androidx.media:media:1.6.0")
 
     implementation ("com.google.accompanist:accompanist-navigation-animation:0.34.0")
+
+    // Required for collectAsState and flow
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+//    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+//    implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
+
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
 }
 

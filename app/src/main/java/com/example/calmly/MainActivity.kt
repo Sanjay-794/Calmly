@@ -69,16 +69,4 @@ class MainActivity : ComponentActivity() {
             notificationManager.createNotificationChannel(channel)
         }
     }
-
-//    private fun createNotificationChannel() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val channel = NotificationChannel(
-//                NotificationChannels.MEDIA_CHANNEL_ID,  // MATCH THIS
-//                "Media Playback",
-//                NotificationManager.IMPORTANCE_LOW
-//            )
-//            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//            manager.createNotificationChannel(channel)
-//        }
-//    }
 }

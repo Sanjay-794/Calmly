@@ -7,28 +7,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.calmly.viewmodel.MediaViewModel
-import com.example.calmly.R
-import com.example.calmly.SoundData
 import com.example.calmly.components.SoundCard
-import com.example.calmly.model.SoundItem
-
-//@Preview(showBackground = true, showSystemUi = true)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SleepScreen() {
     val context = LocalContext.current
     val mediaViewModel: MediaViewModel = hiltViewModel()
 
-    val items = SoundData.getSleepSounds(context)
+//    val items = SoundData.getSleepSounds(context)
+    val items by mediaViewModel.songs.collectAsState()
+    val limitedItems = items.takeLast(5)
 
     Box(modifier = Modifier.fillMaxSize()) {
         LazyVerticalGrid(
@@ -38,7 +33,7 @@ fun SleepScreen() {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(items) { soundItem ->
+            items(limitedItems) { soundItem ->
                 SoundCard(item = soundItem, mediaViewModel)
             }
         }

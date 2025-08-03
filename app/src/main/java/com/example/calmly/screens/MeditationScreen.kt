@@ -11,6 +11,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -19,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.calmly.viewmodel.MediaViewModel
 import com.example.calmly.R
-import com.example.calmly.SoundData
+//import com.example.calmly.SoundData
 import com.example.calmly.components.SoundCard
 import com.example.calmly.model.SoundItem
 
@@ -28,7 +30,9 @@ fun MeditationScreen() {
     val context = LocalContext.current
     val mediaViewModel: MediaViewModel = hiltViewModel()
 
-    val items=SoundData.getMeditationSounds(context)
+//    val items=SoundData.getMeditationSounds(context)
+    val items by mediaViewModel.songs.collectAsState()
+    val limitedItems = items.take(5)
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -40,28 +44,9 @@ fun MeditationScreen() {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(items) { soundItem ->
+            items(limitedItems) { soundItem ->
                 SoundCard(item = soundItem, mediaViewModel)
             }
         }
     }
-}
-//}
-
-fun getRawAudioDurationInMinutes(context: Context, rawResId: Int): Double {
-    val retriever = MediaMetadataRetriever()
-    val assetFileDescriptor = context.resources.openRawResourceFd(rawResId)
-
-    retriever.setDataSource(
-        assetFileDescriptor.fileDescriptor,
-        assetFileDescriptor.startOffset,
-        assetFileDescriptor.length
-    )
-
-    val durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-    retriever.release()
-
-    val durationMs = durationStr?.toLongOrNull() ?: 0L
-    val minutes = durationMs / 60000.0
-    return String.format("%.1f", minutes).toDouble()  // round to 1 decimal
 }

@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "624613274420",
+    "firebase_url": "https://wallify-3834c-default-rtdb.firebaseio.com",
+    "project_id": "wallify-3834c",
+    "storage_bucket": "wallify-3834c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:624613274420:android:6bcea4bcb31a74363dab61",
+        "android_client_info": {
+          "package_name": "com.example.calmly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATltbeWH9eYGAHgjnK-zH2I_aIH75d27E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:624613274420:android:5c00aa75ca404bc73dab61",
+        "android_client_info": {
+          "package_name": "com.example.threadx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATltbeWH9eYGAHgjnK-zH2I_aIH75d27E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:624613274420:android:6251eddc7099b67e3dab61",
+        "android_client_info": {
+          "package_name": "com.example.wallify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATltbeWH9eYGAHgjnK-zH2I_aIH75d27E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
