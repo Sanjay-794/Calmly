@@ -28,6 +28,7 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
+
             )
         }
     }
@@ -101,5 +102,8 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
+
+    implementation("com.google.firebase:firebase-database-ktx:21.0.0")
+    implementation("com.google.firebase:firebase-storage-ktx:20.0.0")
 }
 
